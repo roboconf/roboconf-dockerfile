@@ -11,13 +11,13 @@ ENV projectname=roboconf \
     pkgname=roboconf-dm \
     fullname=roboconf-karaf-dist-dm \
     policy=releases \
-    version=0.5 \
+    version=0.6 \
     baseurl=https://oss.sonatype.org/service/local/artifact/maven/redirect
 
 ## Download Roboconf
-RUN wget --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz \
+RUN wget -N --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz \
  "${baseurl}?g=${projectfqdn}&r=${policy}&a=${fullname}&v=${version}&p=tar.gz" && \
- wget --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz.sha1 \
+ wget -N --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz.sha1 \
  "${baseurl}?g=${projectfqdn}&r=${policy}&a=${fullname}&v=${version}&p=tar.gz.sha1" && \
  [ `sha1sum /opt/${fullname}.tar.gz | cut -d" " -f1` = `cat /opt/${fullname}.tar.gz.sha1` ]
 
@@ -32,20 +32,17 @@ RUN echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" >> /opt/${fullname
 
 WORKDIR /opt/${fullname}
 
-## Install RoboConf DM
+## Install Roboconf DM
 RUN ./bin/karaf server & \
  sleep 5 && \
  ./bin/client -u karaf "feature:install service-wrapper" && \
+ sleep 1 && \
  ./bin/client -u karaf "wrapper:install -n roboconf-dm" && \
  kill `pidof java`
 
-## Configure consoel logging
-RUN sed -i 's/TRACE,\ roboconf/TRACE, stdout/' etc/org.ops4j.pax.logging.cfg
+## Copy the script in the image and give it the right permissions
+COPY start.sh /opt/${fullname}/${pkgname}-docker-wrapper.sh
+RUN chmod 775 /opt/${fullname}/${pkgname}-docker-wrapper.sh
 
-## Configure RabbitMQ messaging server
-RUN sed -i 's/localhost/rc_rabbitmq/' etc/${projectfqdn}.messaging.rabbitmq.cfg
-
-CMD ./bin/${pkgname}-wrapper /opt/${fullname}/etc/${pkgname}-wrapper.conf \
- wrapper.syslog.ident=${pkgname} wrapper.pidfile=/opt/${fullname}/data/${pkgname}.pid
-
-
+## Indicate the default script
+CMD /opt/${fullname}/${pkgname}-docker-wrapper.sh
