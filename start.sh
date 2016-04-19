@@ -43,14 +43,46 @@ messaging_type="http"
 [ ! -z "$MESSAGING_TYPE" ] && messaging_type="$MESSAGING_TYPE"
 
 file=etc/net.roboconf.dm.configuration.cfg
-sed -i "s/messaging-type\s*=.*/messaging-type = ${messaging_type}/g" $file
+if [ -f $file ]; then
+	sed -i "s/messaging-type\s*=.*/messaging-type = ${messaging_type}/g" $file
+fi
+
+file=etc/net.roboconf.agent.configuration.cfg
+if [ -f $file ]; then
+	sed -i "s/messaging-type\s*=.*/messaging-type = ${messaging_type}/g" $file
+fi
 
 
 #
 # Logging configuration
 #
+
 if [ ! -z $REDIRECT_LOGS ]; then
 	sed -i 's/TRACE,\ roboconf/TRACE, stdout/' etc/org.ops4j.pax.logging.cfg
+fi
+
+
+#
+# Agent configuration
+#
+
+file=etc/net.roboconf.agent.configuration.cfg
+if [ -f $file ]; then
+	
+	agent_target_id=""
+	agent_application_name=""
+	agent_scoped_instance_path=""
+	agent_ip_address_of_the_agent=""
+
+	[ ! -z "$AGENT_TARGET_ID" ] && agent_target_id="$AGENT_TARGET_ID"
+	[ ! -z "$AGENT_APPLICATION_NAME" ] && agent_application_name="$AGENT_APPLICATION_NAME"
+	[ ! -z "$AGENT_SCOPED_INSTANCE_PATH" ] && agent_scoped_instance_path="$AGENT_SCOPED_INSTANCE_PATH"
+	[ ! -z "$AGENT_IP_ADDRESS_OF_THE_AGENT" ] && agent_ip_address_of_the_agent="$AGENT_IP_ADDRESS_OF_THE_AGENT"
+	
+	sed -i "s/target-id\s*=.*/target-id = ${agent_target_id}/g" $file
+	sed -i "s/application-name\s*=.*/application-name = ${agent_application_name}/g" $file
+	sed -i "s/scoped-instance-path\s*=.*/scoped-instance-path = ${agent_scoped_instance_path}/g" $file
+	sed -i "s/ip-address-of-the-agent\s*=.*/ip-address-of-the-agent = ${agent_ip_address_of_the_agent}/g" $file
 fi
 
 

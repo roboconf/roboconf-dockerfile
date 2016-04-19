@@ -30,15 +30,15 @@ and REST / JSon. It is IaaS-agnostic, and supports many well-known IaaS (includi
 as well as a "local" deployment plug-in for on-premise hosts). Please, [refer to the FAQ](http://roboconf.net/en/user-guide/faq.html) for more details.
 
 
-How to use this image
-=====================
+How to use this image for the DM?
+=================================
 
 Roboconf involves a messaging solution.  
 For new beginners, the most simple solution is to rely on HTTP messaging (which is directly
 embedded in Roboconf's DM). With this configuration, use the following command to launch Roboconf's DM.
 
 ```bash
-$ docker run -it --rm -p 8181:8181 roboconf/roboconf-dm:latest
+docker run -it --rm -p 8181:8181 roboconf/roboconf-dm:latest
 ```
 
 For production environments though, Roboconf's DM may require a fully-working RabbitMQ server.  
@@ -46,10 +46,10 @@ To start Roboconf using the official RabbitMQ image, please run the following co
 
 ```bash
 # Run RabbitMQ in its own container.
-$ docker run -it --rm -p 5672:5672 -p 4369:4369 --name rc_rabbitmq -d rabbitmq:latest
+docker run -it --rm -p 5672:5672 -p 4369:4369 --name rc_rabbitmq -d rabbitmq:latest
 
 # Run Roboconf's DM and link it with RabbitMQ.
-$ docker run -it --rm -p 8181:8181 --link rc_rabbitmq:rabbitmq roboconf/roboconf-dm:latest
+docker run -it --rm -p 8181:8181 --link rc_rabbitmq:rabbitmq roboconf/roboconf-dm:latest
 ```
 
 You can then go to [http://localhost:8181/roboconf-web-administration](http://localhost:8181/roboconf-web-administration) or
@@ -83,6 +83,7 @@ If *MESSAGING_TYPE* is set to `rabbitmq`.
 | RABBITMQ_USER | guest | User name to connect to RabbitMQ. |
 | RABBITMQ_PASS | guest | Password name to connect to RabbitMQ. |
 
+
 To run it as a stand-alone using your own RabbitMQ server, you can use `-e` option to match your settings.  
 For example, to connect to RabbitMQ server listening on IP 192.168.0.55 and port 5672 using *roboconf* as user and password:
 
@@ -96,7 +97,7 @@ $ docker run -it --rm -p 8181:8181 \
          roboconf/roboconf-dm:latest
 ```
 
-Once your container is started, you may have to login to deploy target handlers in the DM.
+Once your container is started, you may have to login to deploy additional artifacts (e.g. target handlers in the DM).
 
 ```bash
 $ docker exec -it <container_id> /bin/bash
@@ -118,19 +119,50 @@ $ exit
 ```
 
 
+How to use this image for the agent?
+====================================
+
+Roboconf agents can also be launched from a Docker image.  
+To launch such an image, use...
+
+```bash
+docker run -it --rm roboconf/roboconf-agent:latest
+```
+
+Environment variables are the same than for the DM, with the following ones in addition.
+
+| Variable | Value | Description |
+| :------: | :---: | ----------- |
+| AGENT_TARGET_ID | - | The target ID. Used to determine whether dynamic parameters are available. |
+| AGENT_APPLICATION_NAME | - | The application's name. |
+| AGENT_SCOPED_INSTANCE_PATH | - | The path of the instance associated with this agent. |
+| AGENT_IP_ADDRESS_OF_THE_AGENT | - | To force the IP address of an agent (if not set, will be deduced). |
+
+
+
 How to build this image
 =======================
 
-Check this Git repository, open a shell terminal into it and type in `docker build -t roboconf/roboconf-dm:snapshot .`  
-Or refer to the [official Docker documentation](https://docs.docker.com/engine/reference/commandline/build/) for alternatives.
+This Dockerfile allows to build an image for Roboconf's DM and one for Roboconf agents.  
+Releases should use 2 tags.
 
-Releases should use 2 tags.  
-Example with Roboconf 0.6. This way, the latest tag will be updated on every release.  
+Example, to release the DM (version 0.6).
+
+```
+docker build --build-arg RBCF_KIND=dm -t roboconf/roboconf-dm:latest -t roboconf/roboconf-dm:0.6 .
+```
+
+And to release the agent (version 0.6).
+
+```
+docker build --build-arg RBCF_KIND=agent -t roboconf/roboconf-agent:latest -t roboconf/roboconf-agent:0.6 .
+```
+
+By setting 2 tags, the latest tag will be updated on every release.  
 And older versions will remained tagged.
 
-```
-docker build -t roboconf/roboconf-dm:latest -t roboconf/roboconf-dm:0.6 .
-```
+Please, refer to the [official Docker documentation](https://docs.docker.com/engine/reference/commandline/build/) for alternatives.
+
 
 
 License
