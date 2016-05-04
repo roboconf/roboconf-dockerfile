@@ -1,0 +1,19 @@
+language: java
+sudo: required
+
+# We need Docker.
+services:
+  - docker
+
+# Skip the default Maven command launched by Travis.
+# By default, it is "mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V"
+install: true
+
+# One build for the agent, one for the DM.
+env:
+  - pckg=dm
+  - pckg=agent
+
+# Run the scripts against the latest version version.
+script:
+  - cd meta-scripts && ./build.sh "${pckg}" && ./verify.sh "${pckg}"
