@@ -47,10 +47,24 @@ echo
 
 SUCCESS="true"
 
-docker run -d --name "rbcf-test" -e MESSAGING_TYPE=http roboconf/roboconf-$1:latest
+# We create a temporary file.
+# It is shared by both the system and the container.
+THE_DIR=/tmp/roboconf-dockerfile/
+mkdir -p $THE_DIR
+THE_FILE="$THE_DIR/failure.txt"
+touch $THE_FILE
+
+# Also share the verification script used farther.
+LOC=`dirname "$(readlink -f "$0")"`
+
+docker run -d \
+		-v $THE_DIR:$THE_DIR \
+		-v $LOC:/tmp/roboconf-scripts \
+		-e MESSAGING_TYPE=http \
+		--name "rbcf-test" roboconf/roboconf-$1:latest
+
 sleep 3
 INSPECT_OUTPUT=$(docker inspect -f {{.State.Running}} "rbcf-test")
-echo "lol ${INSPECT_OUTPUT}"
 if [[ "${INSPECT_OUTPUT}"  == "false" ]]; then
 	echo "Container 'rbcf-test' is not running."
 	SUCCESS="false"
@@ -63,6 +77,19 @@ fi
 echo
 echo "Checking some little things..."
 echo
+
+# These tests are run inside the container.
+# If they succeed, the file will have been deleted.
+# This way, we know if the tests run and if they succeeded.
+docker exec rbcf-test /bin/bash /tmp/roboconf-scripts/inspect-container.sh
+sleep 3
+
+if [ -f "$THE_FILE" ]; then
+	echo "Failed to find a Roboconf process (PID) in the 'rbcf-test' container."
+	SUCCESS="false"
+else
+	echo "A Roboconf process (PID) was successfully found in the 'rbcf-test' container."
+fi
 
 
 

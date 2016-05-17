@@ -1,7 +1,8 @@
-Supported tags and respective `Dockerfile` links
-================================================
-
-- [`5.0`, `5` (*5.0/Dockerfile*)](https://github.com/roboconf/blob/<BLOB_ID>/Dockerfile)
+# Roboconf Dockerfile
+[![Build Status](http://travis-ci.org/roboconf/roboconf-dockerfile.png?branch=master)](http://travis-ci.org/roboconf/roboconf-dockerfile/builds)
+[![License](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Join us on Gitter.im](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/roboconf/roboconf)
+[![Web site](https://img.shields.io/badge/website-roboconf.net-b23e4b.svg)](http://roboconf.net)
 
 
 What is Roboconf?
@@ -59,7 +60,7 @@ It is possible to modify the Roboconf configuration by setting environment varia
 Here are the default values:
 
 | Variable | Value | Description |
-| :------: | :---: | ----------- |
+| -------- | :---: | ----------- |
 | MESSAGING_TYPE | http | The messaging implementation to use (**http** or **rabbitmq**). |
 | REDIRECT_LOGS | - | If defined, this variable redirects logs to the standard output. |
 
@@ -68,7 +69,7 @@ Here are the default values:
 If *MESSAGING_TYPE* is set to `http`.
 
 | Variable | Value | Description |
-| :------: | :---: | ----------- |
+| -------- | :---: | ----------- |
 | HTTP_IP | localhost | The IP address of Roboconf's DM. This IP will be used by agents. |
 | HTTP_PORT | 8181 | The port used by the DM to expose its web socket for agents. |
 
@@ -77,7 +78,7 @@ If *MESSAGING_TYPE* is set to `http`.
 If *MESSAGING_TYPE* is set to `rabbitmq`.
 
 | Variable | Value | Description |
-| :------: | :---: | ----------- |
+| -------- | :---: | ----------- |
 | RABBITMQ_PORT_5672_TCP_ADDR | rc_rabbitmq | RabbitMQ's IP address (link to another Docker container by default). |
 | RABBITMQ_PORT_5672_TCP_PORT | 5672 | RabbitMQ's port. |
 | RABBITMQ_USER | guest | User name to connect to RabbitMQ. |
@@ -132,7 +133,7 @@ docker run -d roboconf/roboconf-agent:latest
 Environment variables are the same than for the DM, with the following ones in addition.
 
 | Variable | Value | Description |
-| :------: | :---: | ----------- |
+| -------- | :---: | ----------- |
 | AGENT_TARGET_ID | - | The target ID. Used to determine whether dynamic parameters are available. |
 | AGENT_APPLICATION_NAME | - | The application's name. |
 | AGENT_SCOPED_INSTANCE_PATH | - | The path of the instance associated with this agent. |
@@ -147,7 +148,7 @@ This Dockerfile allows to build an image for Roboconf's DM and one for Roboconf 
 The Docker build has 3 arguments.
 
 | Argument | Optional | Default | Description |
-| :------: | :------: | :-----: | ----------- |
+| -------- | :------: | :-----: | ----------- |
 | RBCF_KIND | no | - | Must be either `dm` or `agent`. It is used to determine which image to build. |
 | RBCF_VERSION | yes | LATEST | The version of Roboconf to use. It can include a "-SNAPSHOT" suffix. In this case, the Maven policy should be "snapshots" instead of "releases". **LATEST** is a special keyword for Nexus' API, which is used at build time to resolve the artifact to download. |
 | MAVEN_POLICY | - | releases | The Maven policy: should we search in the `snapshots` or in the `releases` repository? |
@@ -241,12 +242,12 @@ Official Roboconf documentation is available on [Roboconf's web site](http://rob
 Issues
 ------
 
-If you have any problems with or questions about this image, please contact us through a [GitHub issue](https://github.com/roboconf/roboconf-dockerfile-dm/issues).
+If you have any problems with or questions about this image, please contact us through a [GitHub issue](https://github.com/roboconf/roboconf-dockerfile/issues).
 
 
 Contributing
 ------------
 
-To contribute to this image, you can submit a pull-request to [Github repository](https://github.com/roboconf/roboconf-dockerfile-dm).  
-To contribute to Roboconf, please follow the contributing guidelines on [Roboconf's web site](http://roboconf.net/en/sources.html).
+To contribute to this image, you can submit a pull-request to [Github repository](https://github.com/roboconf/roboconf-dockerfile).  
+To contribute to Roboconf, please follow the contributing guidelines on [Roboconf's web site](http://roboconf.net).
 
