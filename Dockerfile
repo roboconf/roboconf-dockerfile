@@ -1,6 +1,6 @@
 FROM java:7-jre
 
-## Roboconf snapshot dockerfile
+# Roboconf dockerfile
 MAINTAINER The Roboconf Team <https://github.com/roboconf>
 
 EXPOSE 8181
@@ -9,24 +9,30 @@ EXPOSE 8181
 # Default value: DM.
 ARG RBCF_KIND=dm
 
+# Version arguments.
+# The version can include a "-SNAPSHOT" suffix.
+# In this case, the Maven policy should be "snapshots" instead of "releases".
+#
+# By default, we pick up the last released version.
+ARG MAVEN_POLICY=releases
+ARG RBCF_VERSION=LATEST
+
 ## Define environment variables
 ENV pkgname=roboconf-${RBCF_KIND} \
     fullname=roboconf-karaf-dist-${RBCF_KIND} \
-    policy=releases \
-    version=0.6 \
     baseurl=https://oss.sonatype.org/service/local/artifact/maven/redirect
 
 ## Download Roboconf
-RUN wget -N --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz \
- "${baseurl}?g=net.roboconf&r=${policy}&a=${fullname}&v=${version}&p=tar.gz" && \
- wget -N --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz.sha1 \
- "${baseurl}?g=net.roboconf&r=${policy}&a=${fullname}&v=${version}&p=tar.gz.sha1" && \
+RUN wget --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz \
+ "${baseurl}?g=net.roboconf&r=${MAVEN_POLICY}&a=${fullname}&v=${RBCF_VERSION}&p=tar.gz" && \
+ wget --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz.sha1 \
+ "${baseurl}?g=net.roboconf&r=${MAVEN_POLICY}&a=${fullname}&v=${RBCF_VERSION}&p=tar.gz.sha1" && \
  [ `sha1sum /opt/${fullname}.tar.gz | cut -d" " -f1` = `cat /opt/${fullname}.tar.gz.sha1` ]
 
 ## Unpack sources
 RUN cd /opt && \
  tar -zxf ${fullname}.tar.gz && \
- ln -s ${fullname}-${version} ${fullname} && \
+ ln -s ${fullname}-* ${fullname} && \
  rm -f ${fullname}.tar.gz ${fullname}.tar.gz.sha1
 
 ## Export Java home

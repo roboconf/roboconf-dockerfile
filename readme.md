@@ -1,7 +1,8 @@
-Supported tags and respective `Dockerfile` links
-================================================
-
-- [`5.0`, `5` (*5.0/Dockerfile*)](https://github.com/roboconf/blob/<BLOB_ID>/Dockerfile)
+# Roboconf Dockerfile
+[![Build Status](http://travis-ci.org/roboconf/roboconf-dockerfile.png?branch=master)](http://travis-ci.org/roboconf/roboconf-dockerfile/builds)
+[![License](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Join us on Gitter.im](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/roboconf/roboconf)
+[![Web site](https://img.shields.io/badge/website-roboconf.net-b23e4b.svg)](http://roboconf.net)
 
 
 What is Roboconf?
@@ -38,7 +39,7 @@ For new beginners, the most simple solution is to rely on HTTP messaging (which 
 embedded in Roboconf's DM). With this configuration, use the following command to launch Roboconf's DM.
 
 ```bash
-docker run -it --rm -p 8181:8181 roboconf/roboconf-dm:latest
+docker run -d -p 8181:8181 roboconf/roboconf-dm:latest
 ```
 
 For production environments though, Roboconf's DM may require a fully-working RabbitMQ server.  
@@ -46,10 +47,10 @@ To start Roboconf using the official RabbitMQ image, please run the following co
 
 ```bash
 # Run RabbitMQ in its own container.
-docker run -it --rm -p 5672:5672 -p 4369:4369 --name rc_rabbitmq -d rabbitmq:latest
+docker run -d -p 5672:5672 -p 4369:4369 --name rc_rabbitmq -d rabbitmq:latest
 
 # Run Roboconf's DM and link it with RabbitMQ.
-docker run -it --rm -p 8181:8181 --link rc_rabbitmq:rabbitmq roboconf/roboconf-dm:latest
+docker run -d -p 8181:8181 --link rc_rabbitmq:rabbitmq roboconf/roboconf-dm:latest
 ```
 
 You can then go to [http://localhost:8181/roboconf-web-administration](http://localhost:8181/roboconf-web-administration) or
@@ -59,7 +60,7 @@ It is possible to modify the Roboconf configuration by setting environment varia
 Here are the default values:
 
 | Variable | Value | Description |
-| :------: | :---: | ----------- |
+| -------- | :---: | ----------- |
 | MESSAGING_TYPE | http | The messaging implementation to use (**http** or **rabbitmq**). |
 | REDIRECT_LOGS | - | If defined, this variable redirects logs to the standard output. |
 
@@ -68,7 +69,7 @@ Here are the default values:
 If *MESSAGING_TYPE* is set to `http`.
 
 | Variable | Value | Description |
-| :------: | :---: | ----------- |
+| -------- | :---: | ----------- |
 | HTTP_IP | localhost | The IP address of Roboconf's DM. This IP will be used by agents. |
 | HTTP_PORT | 8181 | The port used by the DM to expose its web socket for agents. |
 
@@ -77,7 +78,7 @@ If *MESSAGING_TYPE* is set to `http`.
 If *MESSAGING_TYPE* is set to `rabbitmq`.
 
 | Variable | Value | Description |
-| :------: | :---: | ----------- |
+| -------- | :---: | ----------- |
 | RABBITMQ_PORT_5672_TCP_ADDR | rc_rabbitmq | RabbitMQ's IP address (link to another Docker container by default). |
 | RABBITMQ_PORT_5672_TCP_PORT | 5672 | RabbitMQ's port. |
 | RABBITMQ_USER | guest | User name to connect to RabbitMQ. |
@@ -89,7 +90,7 @@ For example, to connect to RabbitMQ server listening on IP 192.168.0.55 and port
 
 ```bash
 # You can pass as many environment variables as necessary.
-$ docker run -it --rm -p 8181:8181 \
+$ docker run -d -p 8181:8181 \
          -e MESSAGING_TYPE=rabbitmq \
          -e RABBITMQ_PORT_5672_TCP_ADDR=192.168.0.55 \
          -e RABBITMQ_USER=roboconf \
@@ -126,13 +127,13 @@ Roboconf agents can also be launched from a Docker image.
 To launch such an image, use...
 
 ```bash
-docker run -it --rm roboconf/roboconf-agent:latest
+docker run -d roboconf/roboconf-agent:latest
 ```
 
 Environment variables are the same than for the DM, with the following ones in addition.
 
 | Variable | Value | Description |
-| :------: | :---: | ----------- |
+| -------- | :---: | ----------- |
 | AGENT_TARGET_ID | - | The target ID. Used to determine whether dynamic parameters are available. |
 | AGENT_APPLICATION_NAME | - | The application's name. |
 | AGENT_SCOPED_INSTANCE_PATH | - | The path of the instance associated with this agent. |
@@ -144,22 +145,72 @@ How to build this image
 =======================
 
 This Dockerfile allows to build an image for Roboconf's DM and one for Roboconf agents.  
-Releases should use 2 tags.
+The Docker build has 3 arguments.
 
-Example, to release the DM (version 0.6).
+| Argument | Optional | Default | Description |
+| -------- | :------: | :-----: | ----------- |
+| RBCF_KIND | no | - | Must be either `dm` or `agent`. It is used to determine which image to build. |
+| RBCF_VERSION | yes | LATEST | The version of Roboconf to use. It can include a "-SNAPSHOT" suffix. In this case, the Maven policy should be "snapshots" instead of "releases". **LATEST** is a special keyword for Nexus' API, which is used at build time to resolve the artifact to download. |
+| MAVEN_POLICY | - | releases | The Maven policy: should we search in the `snapshots` or in the `releases` repository? |
+
+Releases should use 2 tags: `latest` and `<version>`.  
+Example, to build the image for the DM (version 0.6)...
 
 ```
-docker build --build-arg RBCF_KIND=dm -t roboconf/roboconf-dm:latest -t roboconf/roboconf-dm:0.6 .
+docker build \
+		--build-arg RBCF_KIND=dm \
+		--build-arg RBCF_VERSION=0.6 \ 
+		-t roboconf/roboconf-dm:latest \
+		-t roboconf/roboconf-dm:0.6 \
+		.
 ```
 
-And to release the agent (version 0.6).
+And to build the image for the agent (version 0.6)...
 
 ```
-docker build --build-arg RBCF_KIND=agent -t roboconf/roboconf-agent:latest -t roboconf/roboconf-agent:0.6 .
+docker build \
+		--build-arg RBCF_KIND=agent \
+		--build-arg RBCF_VERSION=0.6 \
+		-t roboconf/roboconf-agent:latest \
+		-t roboconf/roboconf-agent:0.6 .
 ```
 
-By setting 2 tags, the latest tag will be updated on every release.  
-And older versions will remained tagged.
+To release a snapshot version...
+
+```
+docker build \
+		--build-arg RBCF_KIND=agent \
+		--build-arg RBCF_VERSION=0.6-SNAPSHOT \
+		--build-arg MAVEN_POLICY=snapshots \
+		-t roboconf/roboconf-agent:latest \
+		-t roboconf/roboconf-agent:0.6 \
+		.
+```
+
+> By setting 2 tags, the latest tag will be updated on every release.    
+> And older versions will remained tagged.
+
+It is also possible to build images for the latest versions.  
+But it is only recommended for development. Not to be pushed to Docker hub.
+
+To build the last released version of Roboconf (if the version is not specified, only use one tag)...
+
+```
+docker build \
+		--build-arg RBCF_KIND=agent \
+		-t roboconf/roboconf-agent:latest
+		.
+```
+
+To build the last snapshot version of Roboconf (if the version is not specified, only use one tag)...
+
+```
+docker build \
+		--build-arg RBCF_KIND=agent \
+		--build-arg MAVEN_POLICY=snapshots \
+		-t roboconf/roboconf-agent:latest
+		.
+```
 
 Please, refer to the [official Docker documentation](https://docs.docker.com/engine/reference/commandline/build/) for alternatives.
 
@@ -191,12 +242,12 @@ Official Roboconf documentation is available on [Roboconf's web site](http://rob
 Issues
 ------
 
-If you have any problems with or questions about this image, please contact us through a [GitHub issue](https://github.com/roboconf/roboconf-dockerfile-dm/issues).
+If you have any problems with or questions about this image, please contact us through a [GitHub issue](https://github.com/roboconf/roboconf-dockerfile/issues).
 
 
 Contributing
 ------------
 
-To contribute to this image, you can submit a pull-request to [Github repository](https://github.com/roboconf/roboconf-dockerfile-dm).  
-To contribute to Roboconf, please follow the contributing guidelines on [Roboconf's web site](http://roboconf.net/en/sources.html).
+To contribute to this image, you can submit a pull-request to [Github repository](https://github.com/roboconf/roboconf-dockerfile).  
+To contribute to Roboconf, please follow the contributing guidelines on [Roboconf's web site](http://roboconf.net).
 
