@@ -42,9 +42,9 @@ WORKDIR /opt/${fullname}
 
 ## Install Roboconf DM
 RUN ./bin/karaf server & \
- sleep 5 && \
+ sleep 7 && \
  ./bin/client -u karaf "feature:install service-wrapper" && \
- sleep 1 && \
+ sleep 5 && \
  ./bin/client -u karaf "wrapper:install -n ${pkgname}" && \
  kill `pidof java`
 
