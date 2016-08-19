@@ -5,7 +5,7 @@
 [![Web site](https://img.shields.io/badge/website-roboconf.net-b23e4b.svg)](http://roboconf.net)
 
 
-<img src="http://roboconf.net/resources/img/nn-0.7-docker-images-for-roboconf.jpg" alt="Roboconf Dockerfile" style="max-width: 400px;" />
+<img src="http://roboconf.net/resources/img/nn-0.7-docker-images-for-roboconf.jpg" alt="Roboconf Dockerfile" width="400" />
 
 
 What is Roboconf?
