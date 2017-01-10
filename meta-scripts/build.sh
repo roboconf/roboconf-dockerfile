@@ -46,7 +46,7 @@ if [[ -z $2  ]]; then
 	echo "Version parameter was not set. LATEST snapshot will be used."
 else
 	VERSION=$2
-	if [[ "$2" != "*-SNAPSHOT" ]]; then
+	if [[ "$2" != *"-SNAPSHOT" ]]; then
 		POLICY="releases"
 	fi
 fi

@@ -40,8 +40,11 @@ RUN echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" >> /opt/${fullname
 
 WORKDIR /opt/${fullname}
 
+## Allow the local client to connect to Karaf instances
+RUN sed -i 's/#karaf/karaf/g' etc/keys.properties
+
 ## Install Roboconf DM
-RUN ./bin/karaf server & \
+RUN ./bin/karaf server && \
  sleep 7 && \
  ./bin/client -u karaf "feature:install service-wrapper" && \
  sleep 5 && \
