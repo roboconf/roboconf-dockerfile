@@ -58,7 +58,7 @@ fi
 #
 
 if [ ! -z $REDIRECT_LOGS ]; then
-	sed -i 's/TRACE,\ roboconf/TRACE, stdout/' etc/org.ops4j.pax.logging.cfg
+	sed -i "s/TRACE,\s*roboconf/TRACE, stdout/g" etc/org.ops4j.pax.logging.cfg
 fi
 
 
@@ -81,8 +81,10 @@ if [ -f $file ]; then
 	
 	sed -i "s/target-id\s*=.*/target-id = ${agent_target_id}/g" $file
 	sed -i "s/application-name\s*=.*/application-name = ${agent_application_name}/g" $file
-	sed -i "s/scoped-instance-path\s*=.*/scoped-instance-path = ${agent_scoped_instance_path}/g" $file
 	sed -i "s/ip-address-of-the-agent\s*=.*/ip-address-of-the-agent = ${agent_ip_address_of_the_agent}/g" $file
+	
+	# "agent_scoped_instance_path" generally contains slashes. So, we use ~ as the SED separator.
+	sed -i "s~scoped-instance-path\s*=.*~scoped-instance-path = ${agent_scoped_instance_path}~g" $file
 fi
 
 
