@@ -43,14 +43,6 @@ WORKDIR /opt/${fullname}
 ## Allow the local client to connect to Karaf instances
 RUN sed -i 's/#karaf/karaf/g' etc/keys.properties
 
-## Install Roboconf DM
-RUN ./bin/karaf server && \
- sleep 7 && \
- ./bin/client -u karaf "feature:install service-wrapper" && \
- sleep 5 && \
- ./bin/client -u karaf "wrapper:install -n ${pkgname}" && \
- kill `pidof java`
-
 ## Copy the script in the image and give it the right permissions
 COPY start.sh /opt/${fullname}/${pkgname}-docker-wrapper.sh
 RUN chmod 775 /opt/${fullname}/${pkgname}-docker-wrapper.sh

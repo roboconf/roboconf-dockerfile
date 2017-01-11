@@ -90,7 +90,4 @@ fi
 # Launch...
 #
 
-./bin/${pkgname}-wrapper \
-    /opt/${fullname}/etc/${pkgname}-wrapper.conf \
-    wrapper.syslog.ident=${pkgname} \
-    wrapper.pidfile=/opt/${fullname}/data/${pkgname}.pid
+./bin/karaf server
