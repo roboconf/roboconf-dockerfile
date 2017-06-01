@@ -138,11 +138,37 @@ Environment variables are the same than for the DM, with the following ones in a
 
 | Variable | Value | Description |
 | -------- | :---: | ----------- |
-| AGENT_TARGET_ID | - | The target ID. Used to determine whether dynamic parameters are available. |
+| AGENT_PARAMETERS | - | The agent parameters. Used to determine whether and where dynamic parameters are available. |
 | AGENT_APPLICATION_NAME | - | The application's name. |
 | AGENT_SCOPED_INSTANCE_PATH | - | The path of the instance associated with this agent. |
 | AGENT_IP_ADDRESS_OF_THE_AGENT | - | To force the IP address of an agent (if not set, will be deduced). |
 
+> Using **AGENT_PARAMETERS** implies all the configuration is passed dynamically
+> by the DM. When used, you do not have to pass other environment variables.
+> Parameters will be retrieved dynamically (including the messaging stuff).
+
+Here are examples showing how to use this image.  
+
+```bash
+# Force the agent parameters
+$ docker run -d -p 8181:8181 \
+         -e AGENT_APPLICATION_NAME="my application name" \
+         -e AGENT_SCOPED_INSTANCE_PATH="/vm1/app1" \
+         -e AGENT_IP_ADDRESS_OF_THE_AGENT="192.168.1.19" \
+         roboconf/roboconf-agent:latest
+
+# Dynamic parameters passed through user data
+$ docker run -d -p 8181:8181 \
+         -e AGENT_PARAMETERS="@iaas-ec2" \
+         roboconf/roboconf-agent:latest
+
+# Dynamic parameters passed through a file
+# (used as an example by the DM when it launches agents in Docker containers).
+$ docker run -d -p 8181:8181 \
+         -v /tmp/rbf:/tmp/dynamic-parameters \
+         -e AGENT_PARAMETERS="/tmp/dynamic-parameters/user-data.txt" \
+         roboconf/roboconf-agent:latest
+```
 
 
 How to build this image
@@ -176,7 +202,8 @@ docker build \
 		--build-arg RBCF_KIND=agent \
 		--build-arg RBCF_VERSION=0.6 \
 		-t roboconf/roboconf-agent:latest \
-		-t roboconf/roboconf-agent:0.6 .
+		-t roboconf/roboconf-agent:0.6 \
+		.
 ```
 
 To release a snapshot version...
@@ -192,7 +219,7 @@ docker build \
 ```
 
 > By setting 2 tags, the latest tag will be updated on every release.    
-> And older versions will remained tagged.
+> And older tags/versions will remain.
 
 It is also possible to build images for the latest versions.  
 But it is only recommended for development. Not to be pushed to Docker hub.
@@ -202,7 +229,7 @@ To build the last released version of Roboconf (if the version is not specified,
 ```
 docker build \
 		--build-arg RBCF_KIND=agent \
-		-t roboconf/roboconf-agent:latest
+		-t roboconf/roboconf-agent:latest \
 		.
 ```
 
@@ -212,12 +239,13 @@ To build the last snapshot version of Roboconf (if the version is not specified,
 docker build \
 		--build-arg RBCF_KIND=agent \
 		--build-arg MAVEN_POLICY=snapshots \
-		-t roboconf/roboconf-agent:latest
+		-t roboconf/roboconf-agent:latest \
 		.
 ```
 
 Please, refer to the [official Docker documentation](https://docs.docker.com/engine/reference/commandline/build/) for alternatives.
 
+> Once images are built for both the DM and the agent, you can run tests with the **verify.sh** script.
 
 
 License

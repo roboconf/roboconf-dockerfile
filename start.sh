@@ -68,21 +68,21 @@ fi
 
 file=etc/net.roboconf.agent.configuration.cfg
 if [ -f $file ]; then
-	
-	agent_target_id=""
+
+	agent_parameters=""
 	agent_application_name=""
 	agent_scoped_instance_path=""
 	agent_ip_address_of_the_agent=""
 
-	[ ! -z "$AGENT_TARGET_ID" ] && agent_target_id="$AGENT_TARGET_ID"
+	[ ! -z "$AGENT_PARAMETERS" ] && agent_parameters="$AGENT_PARAMETERS"
 	[ ! -z "$AGENT_APPLICATION_NAME" ] && agent_application_name="$AGENT_APPLICATION_NAME"
 	[ ! -z "$AGENT_SCOPED_INSTANCE_PATH" ] && agent_scoped_instance_path="$AGENT_SCOPED_INSTANCE_PATH"
 	[ ! -z "$AGENT_IP_ADDRESS_OF_THE_AGENT" ] && agent_ip_address_of_the_agent="$AGENT_IP_ADDRESS_OF_THE_AGENT"
-	
-	sed -i "s/target-id\s*=.*/target-id = ${agent_target_id}/g" $file
+
+	sed -i "s/parameters\s*=.*/parameters = ${agent_parameters}/g" $file
 	sed -i "s/application-name\s*=.*/application-name = ${agent_application_name}/g" $file
 	sed -i "s/ip-address-of-the-agent\s*=.*/ip-address-of-the-agent = ${agent_ip_address_of_the_agent}/g" $file
-	
+
 	# "agent_scoped_instance_path" generally contains slashes. So, we use ~ as the SED separator.
 	sed -i "s~scoped-instance-path\s*=.*~scoped-instance-path = ${agent_scoped_instance_path}~g" $file
 fi
