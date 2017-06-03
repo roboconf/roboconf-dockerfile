@@ -1,7 +1,7 @@
 # Steps are defined and ordered to reduce the number and the size of layers.
 # You can verify the size of every layer by using "docker history <img>".
 # We need a JDK. And we need a minimalist OS.
-FROM openjdk:7-jdk-alpine
+FROM openjdk:7-jre-alpine
 
 # Roboconf dockerfile
 LABEL maintainer="The Roboconf Team" \
@@ -39,7 +39,7 @@ COPY start.sh /opt/${pkgname}-docker-wrapper.sh
 #
 # * Install temporarily wget and SSL stuff.
 # * Download the Roboconf distribution and unpack it
-# * Configure Karaf
+# * Configure Karaf ($JAVA_HOME is correctly configured in the base image)
 # * Allow the local client to connect to Karaf instances (keys.properties)
 # Remove temporary packages
 RUN apk add --no-cache --virtual .bootstrap-deps wget ca-certificates && \
@@ -50,7 +50,6 @@ RUN apk add --no-cache --virtual .bootstrap-deps wget ca-certificates && \
 	tar -zxf ${fullname}.tar.gz && \
 	ln -s ${fullname}-* ${fullname} && \
 	rm -f ${fullname}.tar.gz ${fullname}.tar.gz.sha1 && \
-	echo "export JAVA_HOME=/usr/lib/jvm/java-1.7-openjdk" >> /opt/${fullname}/bin/setenv && \
 	mv /opt/${pkgname}-docker-wrapper.sh /opt/${fullname}/ && \
 	chmod 775 /opt/${fullname}/${pkgname}-docker-wrapper.sh && \
 	sed -i 's/#karaf/karaf/g' /opt/${fullname}/etc/keys.properties && \
