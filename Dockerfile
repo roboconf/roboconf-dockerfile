@@ -1,9 +1,18 @@
-FROM java:7-jre
+# Steps are defined and ordered to reduce the number and the size of layers.
+# You can verify the size of every layer by using "docker history <img>".
+# We need a JDK. And we need a minimalist OS.
+FROM openjdk:7-jdk-alpine
 
 # Roboconf dockerfile
-MAINTAINER The Roboconf Team <https://github.com/roboconf>
+LABEL maintainer="The Roboconf Team" \
+      github="https://github.com/roboconf"
 
+# Expose the default's Karaf port (HTTP)
 EXPOSE 8181
+
+# We also need Bash for Karaf
+RUN apk add --update bash && \
+	rm -rf /var/cache/apk/*
 
 # Build the DM or the agent image.
 # Default value: DM.
@@ -17,35 +26,39 @@ ARG RBCF_KIND=dm
 ARG MAVEN_POLICY=releases
 ARG RBCF_VERSION=LATEST
 
-## Define environment variables
+# Define environment variables
 ENV pkgname=roboconf-${RBCF_KIND} \
     fullname=roboconf-karaf-dist-${RBCF_KIND} \
     baseurl=https://oss.sonatype.org/service/local/artifact/maven/redirect
 
-## Download Roboconf
-RUN wget --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz \
- "${baseurl}?g=net.roboconf&r=${MAVEN_POLICY}&a=${fullname}&v=${RBCF_VERSION}&p=tar.gz" && \
- wget --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz.sha1 \
- "${baseurl}?g=net.roboconf&r=${MAVEN_POLICY}&a=${fullname}&v=${RBCF_VERSION}&p=tar.gz.sha1" && \
- [ `sha1sum /opt/${fullname}.tar.gz | cut -d" " -f1` = `cat /opt/${fullname}.tar.gz.sha1` ]
+# Copy the start script in the image
+COPY start.sh /opt/${pkgname}-docker-wrapper.sh
 
-## Unpack sources
-RUN cd /opt && \
- tar -zxf ${fullname}.tar.gz && \
- ln -s ${fullname}-* ${fullname} && \
- rm -f ${fullname}.tar.gz ${fullname}.tar.gz.sha1
+# We do as many things as possible within this command.
+# The goal is to have a single layer with the smallest size.
+#
+# * Install temporarily wget and SSL stuff.
+# * Download the Roboconf distribution and unpack it
+# * Configure Karaf
+# * Allow the local client to connect to Karaf instances (keys.properties)
+# Remove temporary packages
+RUN apk add --no-cache --virtual .bootstrap-deps wget ca-certificates && \
+	wget --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz "${baseurl}?g=net.roboconf&r=${MAVEN_POLICY}&a=${fullname}&v=${RBCF_VERSION}&p=tar.gz" && \
+	wget --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz.sha1 "${baseurl}?g=net.roboconf&r=${MAVEN_POLICY}&a=${fullname}&v=${RBCF_VERSION}&p=tar.gz.sha1" && \
+	[ `sha1sum /opt/${fullname}.tar.gz | cut -d" " -f1` = `cat /opt/${fullname}.tar.gz.sha1` ] && \
+	cd /opt && \
+	tar -zxf ${fullname}.tar.gz && \
+	ln -s ${fullname}-* ${fullname} && \
+	rm -f ${fullname}.tar.gz ${fullname}.tar.gz.sha1 && \
+	echo "export JAVA_HOME=/usr/lib/jvm/java-1.7-openjdk" >> /opt/${fullname}/bin/setenv && \
+	mv /opt/${pkgname}-docker-wrapper.sh /opt/${fullname}/ && \
+	chmod 775 /opt/${fullname}/${pkgname}-docker-wrapper.sh && \
+	sed -i 's/#karaf/karaf/g' /opt/${fullname}/etc/keys.properties && \
+	apk del .bootstrap-deps && \
+	rm -rf /var/cache/apk/*
 
-## Export Java home
-RUN echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" >> /opt/${fullname}/bin/setenv
-
-WORKDIR /opt/${fullname}
-
-## Allow the local client to connect to Karaf instances
-RUN sed -i 's/#karaf/karaf/g' etc/keys.properties
-
-## Copy the script in the image and give it the right permissions
-COPY start.sh /opt/${fullname}/${pkgname}-docker-wrapper.sh
-RUN chmod 775 /opt/${fullname}/${pkgname}-docker-wrapper.sh
+## Set the working directory
+WORKDIR /opt/${fullname} 
 
 ## Indicate the default script
 CMD /opt/${fullname}/${pkgname}-docker-wrapper.sh
