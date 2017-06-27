@@ -247,6 +247,21 @@ Please, refer to the [official Docker documentation](https://docs.docker.com/eng
 
 > Once images are built for both the DM and the agent, you can run tests with the **verify.sh** script.
 
+You can also build from your local Maven repository.  
+You need to build [this Docker image](https://github.com/roboconf/dockerized-mock-for-nexus-api)
+and run it as described in its [readme](https://github.com/roboconf/dockerized-mock-for-nexus-api/blob/master/readme.md).
+Notice that **this mode does not support the LATEST version**. Then, run...
+
+```properties
+# 172.17.0.1: IP address of the host system for the docker0 network
+docker build \
+		--build-arg RBCF_KIND=agent \
+		--build-arg RBCF_VERSION=0.9-SNAPSHOT \
+		--build-arg BASE_URL="http://172.17.0.1:9090/redirect" \
+		-t roboconf/roboconf-agent:latest-local \
+		.
+```
+
 
 License
 =======

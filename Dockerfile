@@ -26,10 +26,12 @@ ARG RBCF_KIND=dm
 ARG MAVEN_POLICY=releases
 ARG RBCF_VERSION=LATEST
 
+# By default, download artifacts from Sonatype.
+ARG BASE_URL="https://oss.sonatype.org/service/local/artifact/maven/redirect"
+
 # Define environment variables
 ENV pkgname=roboconf-${RBCF_KIND} \
-    fullname=roboconf-karaf-dist-${RBCF_KIND} \
-    baseurl=https://oss.sonatype.org/service/local/artifact/maven/redirect
+    fullname=roboconf-karaf-dist-${RBCF_KIND}
 
 # Copy the start script in the image
 COPY start.sh /opt/${pkgname}-docker-wrapper.sh
@@ -43,8 +45,8 @@ COPY start.sh /opt/${pkgname}-docker-wrapper.sh
 # * Allow the local client to connect to Karaf instances (keys.properties)
 # Remove temporary packages
 RUN apk add --no-cache --virtual .bootstrap-deps wget ca-certificates && \
-	wget --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz "${baseurl}?g=net.roboconf&r=${MAVEN_POLICY}&a=${fullname}&v=${RBCF_VERSION}&p=tar.gz" && \
-	wget --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz.sha1 "${baseurl}?g=net.roboconf&r=${MAVEN_POLICY}&a=${fullname}&v=${RBCF_VERSION}&p=tar.gz.sha1" && \
+	wget --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz "${BASE_URL}?g=net.roboconf&r=${MAVEN_POLICY}&a=${fullname}&v=${RBCF_VERSION}&p=tar.gz" && \
+	wget --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz.sha1 "${BASE_URL}?g=net.roboconf&r=${MAVEN_POLICY}&a=${fullname}&v=${RBCF_VERSION}&p=tar.gz.sha1" && \
 	[ `sha1sum /opt/${fullname}.tar.gz | cut -d" " -f1` = `cat /opt/${fullname}.tar.gz.sha1` ] && \
 	cd /opt && \
 	tar -zxf ${fullname}.tar.gz && \
@@ -53,6 +55,7 @@ RUN apk add --no-cache --virtual .bootstrap-deps wget ca-certificates && \
 	mv /opt/${pkgname}-docker-wrapper.sh /opt/${fullname}/ && \
 	chmod 775 /opt/${fullname}/${pkgname}-docker-wrapper.sh && \
 	sed -i 's/#karaf/karaf/g' /opt/${fullname}/etc/keys.properties && \
+	echo "${fullname} (${RBCF_VERSION}), policy is '${MAVEN_POLICY}', from ${BASE_URL}" > /opt/${fullname}/roboconf-docker-build.txt && \
 	apk del .bootstrap-deps && \
 	rm -rf /var/cache/apk/*
 
