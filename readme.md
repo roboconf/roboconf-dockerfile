@@ -243,10 +243,6 @@ docker build \
 		.
 ```
 
-Please, refer to the [official Docker documentation](https://docs.docker.com/engine/reference/commandline/build/) for alternatives.
-
-> Once images are built for both the DM and the agent, you can run tests with the **verify.sh** script.
-
 You can also build from your local Maven repository.  
 You need to build [this Docker image](https://github.com/roboconf/dockerized-mock-for-nexus-api)
 and run it as described in its [readme](https://github.com/roboconf/dockerized-mock-for-nexus-api/blob/master/readme.md).
@@ -261,6 +257,10 @@ docker build \
 		-t roboconf/roboconf-agent:latest-local \
 		.
 ```
+
+Please, refer to the [official Docker documentation](https://docs.docker.com/engine/reference/commandline/build/) for alternatives.
+
+> Once images are built for both the DM and the agent, you can run tests with the **verify.sh** script.
 
 
 License
