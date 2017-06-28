@@ -79,7 +79,8 @@ if [ -f $file ]; then
 	[ ! -z "$AGENT_SCOPED_INSTANCE_PATH" ] && agent_scoped_instance_path="$AGENT_SCOPED_INSTANCE_PATH"
 	[ ! -z "$AGENT_IP_ADDRESS_OF_THE_AGENT" ] && agent_ip_address_of_the_agent="$AGENT_IP_ADDRESS_OF_THE_AGENT"
 
-	sed -i "s/parameters\s*=.*/parameters = ${agent_parameters}/g" $file
+	# "parameters" may contain slashes, use '#'
+	sed -i "s#parameters\s*=.*#parameters = ${agent_parameters}#g" $file
 	sed -i "s/application-name\s*=.*/application-name = ${agent_application_name}/g" $file
 	sed -i "s/ip-address-of-the-agent\s*=.*/ip-address-of-the-agent = ${agent_ip_address_of_the_agent}/g" $file
 
