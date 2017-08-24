@@ -40,10 +40,10 @@ COPY start.sh /opt/${pkgname}-docker-wrapper.sh
 # The goal is to have a single layer with the smallest size.
 #
 # * Install temporarily wget and SSL stuff.
-# * Download the Roboconf distribution and unpack it
-# * Configure Karaf ($JAVA_HOME is correctly configured in the base image)
-# * Allow the local client to connect to Karaf instances (keys.properties)
-# Remove temporary packages
+# * Download the Roboconf distribution and unpack it.
+# * Configure Karaf ($JAVA_HOME is correctly configured in the base image).
+# * Allow the local client to connect to Karaf instances (keys.properties).
+# * Remove temporary packages.
 RUN apk add --no-cache --virtual .bootstrap-deps wget ca-certificates && \
 	wget --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz "${BASE_URL}?g=net.roboconf&r=${MAVEN_POLICY}&a=${fullname}&v=${RBCF_VERSION}&p=tar.gz" && \
 	wget --progress=bar:force:noscroll -O /opt/${fullname}.tar.gz.sha1 "${BASE_URL}?g=net.roboconf&r=${MAVEN_POLICY}&a=${fullname}&v=${RBCF_VERSION}&p=tar.gz.sha1" && \
