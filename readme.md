@@ -181,7 +181,8 @@ The Docker build has 3 arguments.
 | -------- | :------: | :-----: | ----------- |
 | RBCF_KIND | no | - | Must be either `dm` or `agent`. It is used to determine which image to build. |
 | RBCF_VERSION | yes | LATEST | The version of Roboconf to use. It can include a "-SNAPSHOT" suffix. In this case, the Maven policy should be "snapshots" instead of "releases". **LATEST** is a special keyword for Nexus' API, which is used at build time to resolve the artifact to download. |
-| MAVEN_POLICY | - | releases | The Maven policy: should we search in the `snapshots` or in the `releases` repository? |
+| MAVEN_POLICY | yes | releases | The Maven policy: should we search in the `snapshots` or in the `releases` repository? |
+| BASE_URL | yes | https://oss.sonatype.org/service/local/artifact/maven/redirect | The REST API used to resolve the Maven artifacts (the Debian packages are stored as Maven artifacts). One could reference another Nexus instance or [a mock of it](https://github.com/roboconf/dockerized-mock-for-nexus-api). |
 
 Releases should use 2 tags: `latest` and `<version>`.  
 Example, to build the image for the DM (version 0.6)...
