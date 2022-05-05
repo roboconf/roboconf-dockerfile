@@ -2,10 +2,10 @@
 [![Build Status](http://travis-ci.org/roboconf/roboconf-dockerfile.png?branch=master)](http://travis-ci.org/roboconf/roboconf-dockerfile/builds)
 [![License](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Join us on Gitter.im](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/roboconf/roboconf)
-[![Web site](https://img.shields.io/badge/website-roboconf.net-b23e4b.svg)](http://roboconf.net)
+[![Web site](https://img.shields.io/badge/website-roboconf.github.io-b23e4b.svg)](https://roboconf.github.io)
 
 
-<img src="http://roboconf.net/resources/img/nn-0.7-docker-images-for-roboconf.jpg" alt="Roboconf Dockerfile" width="400" />
+<img src="https://roboconf.github.io/resources/img/nn-0.7-docker-images-for-roboconf.jpg" alt="Roboconf Dockerfile" width="400" />
 
 
 What is Roboconf?
@@ -23,16 +23,16 @@ Roboconf handles application life cycle: hot reconfiguration (e.g. for elasticit
 The global idea is to apply to applications the concepts used in component technologies like OSGi. Roboconf achieves this in a non-intrusive
 way, so that it can work with legacy Software.
 
-<img src="http://roboconf.net/resources/img/roboconf-workflow.png" alt="Roboconf's workflow" style="max-width: 400px;" />
+<img src="https://roboconf.github.io/resources/img/roboconf-workflow.png" alt="Roboconf's workflow" style="max-width: 400px;" />
 
 Application parts use the message queue to communicate and take the appropriate actions depending on what is deployed or started.
 These *appropriate* actions are executed by plug-ins (such as bash or [Puppet](http://puppetlabs.com)). 
 
-<img src="http://roboconf.net/resources/img/roboconf-architecture-example.jpg" alt="Roboconf's architecture" style="max-width: 400px;" />
+<img src="https://roboconf.github.io/resources/img/roboconf-architecture-example.jpg" alt="Roboconf's architecture" style="max-width: 400px;" />
 
 Roboconf is distributed technology, based on AMQP 
 and REST / JSon. It is IaaS-agnostic, and supports many well-known IaaS (including OpenStack, Amazon Web Services, Microsoft Azure, VMWare, 
-as well as a "local" deployment plug-in for on-premise hosts). Please, [refer to the FAQ](http://roboconf.net/en/user-guide/faq.html) for more details.
+as well as a "local" deployment plug-in for on-premise hosts). Please, [refer to the FAQ](https://roboconf.github.io/en/user-guide/faq.html) for more details.
 
 
 How to use this image for the DM?
@@ -284,7 +284,7 @@ User Feedback
 Documentation
 -------------
 
-Official Roboconf documentation is available on [Roboconf's web site](http://roboconf.net).
+Official Roboconf documentation is available on [Roboconf's web site](https://roboconf.github.io).
 
 
 Issues
@@ -297,5 +297,5 @@ Contributing
 ------------
 
 To contribute to this image, you can submit a pull-request to [Github repository](https://github.com/roboconf/roboconf-dockerfile).  
-To contribute to Roboconf, please follow the contributing guidelines on [Roboconf's web site](http://roboconf.net).
+To contribute to Roboconf, please follow the contributing guidelines on [Roboconf's web site](https://roboconf.github.io).
 
